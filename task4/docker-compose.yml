@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # 1. Back-end Service (Flask API)
+  back-end:
+    # Use the build context and Dockerfile path relative to the docker-compose.yml file
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    
+    # Tag the resulting image
+    image: softy-pinko-back-end:task4
+    
+    # Map the container's port 5252 to the host machine's port 5252
+    # This allows you to access the API directly via http://localhost:5252
+    ports:
+      - "5252:5252"
+    
+    # Set a dependency so the front-end waits for the back-end to start
+    # Note: depends_on only controls the start order, not service readiness.
+    depends_on:
+      - back-end
+
+  # 2. Front-end Service (Nginx Web Server)
+  front-end:
+    # Use the build context and Dockerfile path
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+
+    # Tag the resulting image
+    image: softy-pinko-front-end:task4
+    
+    # Map the container's port 9000 (Nginx) to the host machine's port 9000
+    # This allows you to access the website via http://localhost:9000
+    ports:
+      - "9000:9000"
+
+    # Ensure the back-end service is started before the front-end
+    depends_on:
+      - back-end
